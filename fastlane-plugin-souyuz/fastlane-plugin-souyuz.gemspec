@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = 'voydz@hotmail.com'
 
   spec.summary       = 'A fastlane component to make Xamarin builds a breeze'
-  spec.homepage      = 'https://github.com/voydz/souyuz'
+  spec.homepage      = 'https://github.com/Didstopia/souyuz'
   spec.license       = "MIT"
 
   spec.files         = Dir["lib/**/*"] + %w(README.md LICENSE)
@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'souyuz', Fastlane::Souyuz::VERSION
 
   spec.add_development_dependency 'bundler'
-  spec.add_development_dependency 'fastlane', '>= 1.103.0'
+  spec.add_development_dependency 'fastlane', '>= 2.184.0'
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake'
 end
