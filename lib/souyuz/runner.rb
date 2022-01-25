@@ -15,9 +15,7 @@ module Souyuz
       elsif Souyuz.project.android?
         path = apk_file
         if config[:keystore_path] && config[:keystore_alias]
-          UI.success "Jar it, sign it, zip it..."
-
-          jarsign_and_zipalign
+          apksign_and_zipalign
         end
 
         path
@@ -39,23 +37,32 @@ module Souyuz
       build_path = Souyuz.project.options[:output_path]
       assembly_name = Souyuz.project.options[:assembly_name]
 
-      Souyuz.cache[:build_apk_path] = "#{build_path}/#{assembly_name}.apk"
+      build_apk_path = "#{build_path}/#{assembly_name}.apk"
+      Souyuz.cache[:build_apk_path] = build_apk_path
 
-      "#{build_path}/#{assembly_name}.apk"
+      build_apk_path
     end
 
-    def jarsign_and_zipalign
-      command = JavaSignCommandGenerator.generate
+    def apksign_and_zipalign
+      UI.success "Start signing process..."
+
+      command = ZipalignCommandGenerator.generate
+      FastlaneCore::CommandExecutor.execute(command: command,
+                                            print_all: true,
+                                            print_command: !Souyuz.config[:silent])
+
+      command = ApkSignCommandGenerator.generate
       FastlaneCore::CommandExecutor.execute(command: command,
                                             print_all: false,
                                             print_command: !Souyuz.config[:silent])
 
-      UI.success "Successfully signed apk #{Souyuz.cache[:build_apk_path]}"
+      # move signed apk back to build apk path
+      FileUtils.cp_r(
+        Souyuz.cache[:signed_apk_path],
+        Souyuz.cache[:build_apk_path],
+        :remove_destination => true)
 
-      command = AndroidZipalignCommandGenerator.generate
-      FastlaneCore::CommandExecutor.execute(command: command,
-                                            print_all: true,
-                                            print_command: !Souyuz.config[:silent])
+      UI.success "Successfully signed apk #{Souyuz.cache[:build_apk_path]}"
     end
 
     #
